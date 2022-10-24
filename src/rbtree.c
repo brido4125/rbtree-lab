@@ -11,8 +11,10 @@ void rotate_right(node_t* node);
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
   // TODO: initialize struct if needed
-    p->root = NULL;
-    p->nil = NULL;
+    node_t *nilNode = (node_t *) calloc(1, sizeof(node_t));
+    nilNode->color = RBTREE_BLACK;
+    p.nil = nilNode;
+    p->root = nilNode;
     return p;
 }
 
