@@ -7,6 +7,7 @@ node_t* getGrandParent(node_t* node);
 node_t* getUncle(node_t* node);
 void rotate_left(node_t* node);
 void rotate_right(node_t* node);
+void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
 
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
@@ -46,47 +47,42 @@ node_t* getUncle(node_t* node){
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
-    node_t *parentNode = NULL;
-    node_t *newNode = NULL;
-    if (t == NULL){
-        return NULL;
-    }
-    parentNode = t->root;
-    while (parentNode != NULL) {
-        if (key < parentNode->key) {
-            if (parentNode->left == NULL) {
-                break;
-            }else {
-                parentNode = parentNode->left;
+    node_t *parentNode = t->nil;
+    node_t *tmpNode = t->root;
+    node_t *newNode = (node_t *) calloc(1, sizeof(node_t));
 
-            }
+    newNode->key = key;
+
+    //tmpNode가 leaf에 도달하면 while 탈출
+    while (tmpNode != t->nil) {
+        parentNode = tmpNode;
+        if (newNode.key < tmpNode->key) {
+            tmpNode = tmpNode->left;
         }else{
-            if (parentNode->right == NULL) {
-                break;
-            } else {
-                parentNode = parentNode->right;
-            }
+            tmpNode = tmpNode->right;
         }
     }
-    newNode = calloc(1, sizeof(node_t));
-    if (newNode != NULL) {
-        newNode->key = key;
-        newNode->left = NULL;
-        newNode->right = NULL;
-        newNode->color = RBTREE_RED;
-        if (parentNode == NULL) {
-            printf("Root node add here\n");
-            printf("Root node's Color %d\n",newNode->color);
-            t->root = newNode;
-        }else{
-            if (newNode->key < parentNode->key) {
-                parentNode->left = newNode;
-            }else{
-                parentNode->right = newNode;
-            }
-        }
+
+    //while문을 통해 설정한 parentNode를 newNode의 부모 노드로 설정
+    newNode->parent = parentNode;
+
+    //parentNode가 leaf node이면 트리가 비어 있는 상태
+    if (parentNode == t->nil) {
+        //새로 추가할 노드를 tree의 루트 노드로 설정
+        t->root = newNode;
+    } else if (newNode->key < parentNode->key) {
+        parentNode->left = newNode;
+    } else{
+        parentNode->right = newNode;
     }
-  return newNode;
+    //새로 추가된 노드의 leaf node를 nil node로 설정
+    newNode->left = t->nil;
+    newNode->right = t->nil;
+    newNode->color = RBTREE_RED;//항상 삽입되는 노드의 색깔을 RED
+
+    rbtree_insert_fixup(t,newNode);
+
+    return newNode;
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
