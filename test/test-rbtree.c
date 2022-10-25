@@ -374,7 +374,7 @@ int main(void) {
     int ary[5] = {10, 20, 2, 3, 5};
     insert_arr(t,ary,5);
     printTree(t,t->root,1);
-//  test_find_single(512, 1024);
+    test_find_single(512, 1024);
 //  test_erase_root(128);
 //  test_find_erase_fixed();
 //  test_minmax_suite();
