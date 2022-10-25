@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void rotate_left(node_t* node);
-void rotate_right(node_t* node);
+void rotate_left(rbtree* tree, node_t* node);
+void rotate_right(rbtree* tree, node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
 void printTree(rbtree* tree,node_t* node,int level);
 
@@ -102,6 +102,60 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
   return 0;
 }
+
+//temp가 node 보다 상위 노드로 바뀌어야함
+void rotate_left(rbtree* tree, node_t* node){
+    node_t * temp;
+    temp = node->right;
+    node->right = temp->left;
+    //tmp의 left가 NIL이 아니면 해당 노드의 부모를 node로 설정
+    if (temp->left != tree->nil) {
+        temp->left->parent = x;
+    }
+    temp->parent = node->parent;
+    //node가 root인 경우 -> temp가 루트 노드가 되어야함
+    if (node->parent == tree->nil) {
+        tree->root = temp;
+    }
+    //node가 왼쪽 자식이면
+    else if (node == node->parent->left) {
+        node->parent->left = temp;
+    }
+    //node가 오른쪽 자식이면
+    else{
+        node->parent->right = temp;
+    }
+    temp->left = node;
+    node->parent = temp;
+}
+
+void rotate_right(rbtree* tree, node_t* node){
+    node_t * temp;
+    //target의 left를 temp로 지정
+    temp = node->left;
+    //temp의 오른쪽 서브트리를 target의 왼쪽 서브트리로 변경
+    node->right = temp->left;
+    //tmp의 오른쪽 서브트리가 NIL이 아니면 해당 노드의 부모를 node로 설정
+    if (temp->right != tree->nil) {
+        temp->right->parent = x;
+    }
+    temp->parent = node->parent;
+    //node가 root인 경우 -> temp가 루트 노드가 되어야함
+    if (node->parent == tree->nil) {
+        tree->root = temp;
+    }
+        //node가 왼쪽 자식이면
+    else if (node == node->parent->left) {
+        node->parent->left = temp;
+    }
+        //node가 오른쪽 자식이면
+    else{
+        node->parent->right = temp;
+    }
+    temp->right = node;
+    node->parent = temp;
+}
+
 
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode){
     node_t* uncle;
