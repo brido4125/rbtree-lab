@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-node_t* getGrandParent(node_t* node);
-node_t* getUncle(node_t* node);
 void rotate_left(node_t* node);
 void rotate_right(node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
@@ -25,25 +23,6 @@ void delete_rbtree(rbtree *t) {
   free(t);
 }
 
-node_t* getGrandParent(node_t* node){
-    if ((node != NULL) && (node->parent != NULL)) {
-        return node->parent->parent;
-    } else {
-        return NULL;
-    }
-}
-
-node_t* getUncle(node_t* node){
-    node_t* grand = getGrandParent(node);
-    if (grand == NULL) {
-        return NULL;
-    }
-    if (node->parent == grand->left) {
-        return grand->right;
-    } else{
-        return grand->left;
-    }
-}
 
 void printTree(rbtree* tree,node_t * node,int level){
     if (node != tree->nil) {
@@ -122,4 +101,61 @@ int rbtree_erase(rbtree *t, node_t *p) {
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
   return 0;
+}
+
+void rbtree_insert_fixup(rbtree* tree,node_t* newNode){
+    node_t* uncle;
+    //추가할 노드의 부모가 RED => RED -> RED 연속되는 상황 -> 트리 수정 필요
+    while (newNode->parent->color == RBTREE_RED) {
+        //왼쪽 서브 트리인 경우
+        if (newNode->parent == newNode->parent->parent->left) {
+            uncle = newNode->parent->parent->right;
+            //1. 새로운 노드의 Uncle 노드가 적색인 경우
+            if (uncle->color == RBTREE_RED) {
+                //부모와 삼촌 노드를 BLACK으로
+                newNode->parent->color = RBTREE_BLACK;
+                uncle->color = RBTREE_BLACK;
+                newNode->parent->parent->color = RBTREE_RED;
+                newNode = newNode->parent->parent;// 할아버지 노드가 RED로 변경되었기에 다시 확인하기 위해 newNode를 grand로 설정
+            }
+            //새로운 노드의 Uncle 노드가 BLACK
+            else{
+                //2. 새로운 자식이 오른쪽 자식인 경우 -> 할아버지 노드까지 가는 경로가 꺽인 경우
+                //왼쪽 회전으로 일자로 펴주고 회전 한번 더
+                if (newNode == newNode->parent->right) {
+                    newNode = newNode->parent;
+                    rotate_left(tree, newNode);//꺽인 경로를 일자로 만들기 위해 부모 노드 기준으로 회전
+                }
+                //색깔 먼저 바꾸고 후에 rotate
+                newNode->parent->color = RBTREE_BLACK;
+                newNode->parent->parent->color = RBTREE_RED;
+                rotate_right(tree, newNode->parent->parent);//할아버지 노드 기준 회전 -> 할아버지가 내려오고 newNode가 새로운 부모 노드가 됨
+            }
+        }
+        //grand의 오른쪽 서브트리인 경우
+        else{
+            uncle = newNode->parent->parent->left;
+            //Uncle이 적색
+            if (uncle->color == RBTREE_RED) {
+                newNode->parent->color = RBTREE_BLACK;
+                uncle->color = RBTREE_BLACK;
+                newNode->parent->parent->color = RBTREE_RED;
+                newNode = newNode->parent->parent;// 할아버지 노드가 RED로 변경되었기에 다시 확인하기 위해 newNode를 grand로 설정
+            }
+            //Uncle이 흑색
+            else{
+                //경로가 꺽여 있는 경우
+                if (newNode == newNode->parent->left) {
+                    newNode = newNode->parent;
+                    rotate_right(tree, newNode);//꺽인 경로를 일자로 만들기 위해 부모 노드 기준으로 회전
+                }
+                //색깔 먼저 바꾸고 후에 rotate
+                newNode->parent->color = RBTREE_BLACK;
+                newNode->parent->parent->color = RBTREE_RED;
+                rotate_left(tree, newNode->parent->parent);//할아버지 노드 기준 회전 -> 할아버지가 내려오고 newNode가 새로운 부모 노드가 됨
+            }
+        }
+    }
+    //root 노드는 항상 BLACK
+    tree->root->color = RBTREE_BLACK;
 }
