@@ -6,6 +6,7 @@
 void rotate_left(rbtree* tree, node_t* node);
 void rotate_right(rbtree* tree, node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
+void rbtree_transplant(rbtree* tree,node_t* u,node_t* v);
 
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
@@ -41,7 +42,7 @@ void printTree(rbtree* tree,node_t * node,int level){
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
-    node_t *parentNode = t->nil;
+    node_t *parentNode = t->root;
     node_t *tmpNode = t->root;
     node_t *newNode = (node_t *) calloc(1, sizeof(node_t));
 
@@ -104,6 +105,24 @@ node_t *rbtree_min(const rbtree *t) {
 node_t *rbtree_max(const rbtree *t) {
   // TODO: implement find
   return t->root;
+}
+
+void rbtree_transplant(rbtree* tree,node_t* firstSubtreeRoot,node_t* secondSubtreeRoot){
+    //firstSubtreeRoot가 루트 노드이면
+    if (firstSubtreeRoot->parent == tree->nil) {
+        //트리의 root node를 secondSubtreeRoot로 변경
+        tree->root = secondSubtreeRoot;
+    }
+    //firstSubtreeRoot가 왼쪽 서브트리이면
+    else if (firstSubtreeRoot == firstSubtreeRoot->parent->left) {
+        firstSubtreeRoot->parent->left = secondSubtreeRoot;
+    }
+    //firstSubtreeRoot가 오른쪽 서브트리이면
+    else{
+        firstSubtreeRoot->parent->right = secondSubtreeRoot;
+    }
+    //두번째 서브트리의 루트노드를 첫번째 서브트리의 루트노드로 변경
+    secondSubtreeRoot->parent = firstSubtreeRoot->parent;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
