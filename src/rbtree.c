@@ -82,7 +82,22 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
-  return t->root;
+    node_t *returnNode = t.root;
+    if (t == NULL) {
+        printf("RBTree Pointer allocation error in rbtree_find()\n")
+        return NULL;
+    }
+    while (returnNode != t->nil) {
+        if (returnNode.key == key) {
+            return returnNode;
+        }
+        if (returnNode->key < key) {
+            returnNode = returnNode->right;
+        }else{
+            returnNode = returnNode->left
+        }
+    }
+    return NULL;
 }
 
 node_t *rbtree_min(const rbtree *t) {
