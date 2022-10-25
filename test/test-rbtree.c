@@ -369,8 +369,11 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
 
 int main(void) {
     test_init();
-    test_insert_single(1024);
-    insert_arr()
+    //test_insert_single(1024);
+    rbtree *t = new_rbtree();
+    int ary[5] = {10, 20, 2, 3, 5};
+    insert_arr(t,ary,5);
+    printTree(t,t->root,1);
 //  test_find_single(512, 1024);
 //  test_erase_root(128);
 //  test_find_erase_fixed();

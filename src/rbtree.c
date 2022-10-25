@@ -6,7 +6,6 @@
 void rotate_left(rbtree* tree, node_t* node);
 void rotate_right(rbtree* tree, node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
-void printTree(rbtree* tree,node_t* node,int level);
 
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
@@ -25,6 +24,9 @@ void delete_rbtree(rbtree *t) {
 
 
 void printTree(rbtree* tree,node_t * node,int level){
+    for (int i = 0; i < level-1 ; i++) {
+        printf("    ");
+    }
     if (node != tree->nil) {
         printf("노드의 레벨 : %d\n", level);
         printf("노드의 값 : %d\n", node->key);
@@ -74,7 +76,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
     //일반적인 BST의 편향 트리를 조정하기 위한 함수 호출
     rbtree_insert_fixup(t,newNode);
-    printTree(t,t->root,1);
+    //printTree(t,t->root,1);
     return newNode;
 }
 
@@ -110,7 +112,7 @@ void rotate_left(rbtree* tree, node_t* node){
     node->right = temp->left;
     //tmp의 left가 NIL이 아니면 해당 노드의 부모를 node로 설정
     if (temp->left != tree->nil) {
-        temp->left->parent = x;
+        temp->left->parent = node;
     }
     temp->parent = node->parent;
     //node가 root인 경우 -> temp가 루트 노드가 되어야함
@@ -137,7 +139,7 @@ void rotate_right(rbtree* tree, node_t* node){
     node->right = temp->left;
     //tmp의 오른쪽 서브트리가 NIL이 아니면 해당 노드의 부모를 node로 설정
     if (temp->right != tree->nil) {
-        temp->right->parent = x;
+        temp->right->parent = node;
     }
     temp->parent = node->parent;
     //node가 root인 경우 -> temp가 루트 노드가 되어야함
