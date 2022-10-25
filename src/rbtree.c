@@ -8,13 +8,14 @@ node_t* getUncle(node_t* node);
 void rotate_left(node_t* node);
 void rotate_right(node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
+void printTree(rbtree* tree,node_t* node,int level);
 
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
   // TODO: initialize struct if needed
     node_t *nilNode = (node_t *) calloc(1, sizeof(node_t));
     nilNode->color = RBTREE_BLACK;
-    p.nil = nilNode;
+    p->nil = nilNode;
     p->root = nilNode;
     return p;
 }
@@ -44,6 +45,18 @@ node_t* getUncle(node_t* node){
     }
 }
 
+void printTree(rbtree* tree,node_t * node,int level){
+    if (node != tree->nil) {
+        printf("노드의 레벨 : %d\n", level);
+        printf("노드의 값 : %d\n", node->key);
+        printf("노드의 색깔 : %d\n", node->color);
+        printTree(tree,node->left,level+1);
+        printTree(tree,node->right,level+1);
+    }else{
+        printf("노드의 레벨 : %d은", level);
+        printf("NIL노드입니다.\n");
+    }
+}
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
@@ -56,7 +69,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     //tmpNode가 leaf에 도달하면 while 탈출
     while (tmpNode != t->nil) {
         parentNode = tmpNode;
-        if (newNode.key < tmpNode->key) {
+        if (newNode->key < tmpNode->key) {
             tmpNode = tmpNode->left;
         }else{
             tmpNode = tmpNode->right;
@@ -80,8 +93,9 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     newNode->right = t->nil;
     newNode->color = RBTREE_RED;//항상 삽입되는 노드의 색깔을 RED
 
+    //일반적인 BST의 편향 트리를 조정하기 위한 함수 호출
     rbtree_insert_fixup(t,newNode);
-
+    printTree(t,t->root,1);
     return newNode;
 }
 
