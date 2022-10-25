@@ -171,8 +171,72 @@ int rbtree_erase(rbtree *tree, node_t *targetNode) {
     return 0;
 }
 
-void rbtree_delete_fixup(rbtree *t, node_t *x){
+void rbtree_delete_fixup(rbtree *tree, node_t *x){
+    while (x != tree->root && x->color == RBTREE_BLACK) {
+        //CASE 1 ~ 4 : LEFT CASE, doubled black이 왼쪽 노드인 경우
+        if (x == x->parent->left) {
+            node_t *w = x->parent->left;//w는 x의 형제 노드
+            //형제 노드가 RED인 경우
+            if (w->color == RBTREE_RED) {
+                w->color = RBTREE_BLACK;
+                x->parent->color = RBTREE_RED;
+                rotate_left(tree, x->parent);
+                w = x->parent->right;
+            }
+            //x의 형제 w는 흑색이고 w의 자식들이 모두 BLACK
+            if (w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK) {
+                w->color = RBTREE_RED;
+                x = x->parent;
+            }
 
+            else{
+                //x의 형제 w는 흑색,w의 왼쪽 자식은 적색, w의 오른쪽 자식은 흑색인 경우
+                if (w->right->color == RBTREE_BLACK) {
+                    w->left->color = RBTREE_BLACK;
+                    w->color = RBTREE_RED;
+                    rotate_right(tree, w);
+                    w = x->parent->right;
+                }
+                w->color = x->parent->color;
+                x->parent->color = RBTREE_BLACK;
+                w->right->color = RBTREE_BLACK;
+                rotate_left(tree, x->parent);
+                x = tree->root;
+            }
+        }
+        //CASE 5 ~ 8 : Right CASE, doubled black이 오른쪽 노드인 경우
+        else{
+            node_t *w = x->parent->left;//w는 x의 형제 노드
+            //CASE5 : x의 형제 노드가 RED
+            if (w->color == RBTREE_RED) {
+                w->color = RBTREE_BLACK;
+                x->parent->color = RBTREE_RED;
+                rotate_right(tree, x->parent);
+                w = x->parent->left;
+            }
+            //CASE 6 : x의 형제 노드 w는 흑색이고 w의 두 자식이 모두 흑색인 경우
+            if (w->right->color == RBTREE_BLACK && w->left->color == RBTREE_BLACK) {
+                w->color = RBTREE_RED;
+                x = x->parent;
+            }
+            else{
+                //CASE 7 : x의 형제는 black, w의 왼쪽 자식은 적색, w의 오른쪽 자식은 흑색
+                if (w->left->color == RBTREE_BLACK) {
+                    w->right->color = RBTREE_BLACK;
+                    w->color = RBTREE_RED;
+                    rotate_left(tree, w);
+                    w = x->parent->left;
+                }
+                //CASE 8 : x의 형제는 흑색이고 오른쪽 자식이 red인 경우
+                w->color = x->parent->color;
+                x->parent->color = RBTREE_BLACK;
+                w->left->color = RBTREE_BLACK;
+                rotate_right(tree, x->parent);
+                x = tree->root;
+            }
+        }
+    }
+    x->color = RBTREE_BLACK;
 }
 
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
