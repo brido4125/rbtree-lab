@@ -7,6 +7,7 @@ void rotate_left(rbtree* tree, node_t* node);
 void rotate_right(rbtree* tree, node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
 void rbtree_transplant(rbtree* tree,node_t* u,node_t* v);
+void rbtree_delete_fixup(rbtree *t, node_t *x);
 
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
@@ -125,9 +126,53 @@ void rbtree_transplant(rbtree* tree,node_t* firstSubtreeRoot,node_t* secondSubtr
     secondSubtreeRoot->parent = firstSubtreeRoot->parent;
 }
 
-int rbtree_erase(rbtree *t, node_t *p) {
+int rbtree_erase(rbtree *tree, node_t *targetNode) {
   // TODO: implement erase
-  return 0;
+    node_t *y;
+    node_t *x;
+    color_t yOriginalColor;
+
+    y = targetNode;
+    yOriginalColor = y->color;
+    //지울 노드의 왼쪽이 NIL이면
+    if (targetNode->left == tree->nil) {
+        x = targetNode->right;
+        rbtree_transplant(tree,targetNode,targetNode->right)
+    } else if (targetNode->right == tree->nil) {
+        x = targetNode->left;
+        rbtree_transplant(tree, targetNode, targetNode->left);
+    }else{
+        //Successor 설정
+        y = targetNode->right;
+        while (y->left != tree->nil) {
+            y = y->left;
+        }
+        yOriginalColor = y->color;//설정된 직후 노드의 색깔로 닫시 설정
+        x = y->right;//x를 직후노드의 오른쪽 자식으로 설정
+        //y의 부모가 삭제할 노드인 경우,즉 depth가 1만큼 차이가 나는 경우
+        if (y->parent == targetNode) {
+            x->parent = y;
+        }
+        else{
+            rbtree_transplant(tree, y, y->right);//y의 오른쪽 노드와 y의 위치를 변경
+            y->right = targetNode->right;//
+            y->right->parent = y;
+        }
+        rbtree_transplant(tree, targetNode, y);
+        y->left = targetNode->left;
+        y->left->parent = y;
+        y->color = targetNode->color;
+    }
+
+    if (yOriginalColor == RBTREE_BLACK) {
+        rbtree_delete_fixup(tree, x);
+    }
+    free(targetNode);
+    return 0;
+}
+
+void rbtree_delete_fixup(rbtree *t, node_t *x){
+
 }
 
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
