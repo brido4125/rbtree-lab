@@ -8,6 +8,7 @@ void rotate_right(rbtree* tree, node_t* node);
 void rbtree_insert_fixup(rbtree* tree,node_t* newNode);
 void rbtree_transplant(rbtree* tree,node_t* u,node_t* v);
 void rbtree_delete_fixup(rbtree *t, node_t *x);
+void delete_rbtree_internal(rbtree* tree,node_t* node);
 
 rbtree* new_rbtree(void) {
     rbtree *p = (rbtree *) calloc(1, sizeof(rbtree));
@@ -19,19 +20,20 @@ rbtree* new_rbtree(void) {
     return p;
 }
 
+
+void delete_rbtree(rbtree *t) {
+  // TODO: reclaim the tree nodes's memory
+    if (t != NULL) {
+        delete_rbtree_internal(t,t->root);
+        free(t);
+    }
+}
+
 void delete_rbtree_internal(rbtree* tree,node_t* node){
     if (node != tree->nil) {
         delete_rbtree_internal(tree, node->left);
         delete_rbtree_internal(tree, node->right);
         free(node);
-    }
-}
-
-void delete_rbtree(rbtree *t) {
-  // TODO: reclaim the tree nodes's memory
-    if (t != NULL) {
-        delete_rbtree_internal(t->root);
-        free(t);
     }
 }
 
@@ -89,7 +91,6 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
     //일반적인 BST의 편향 트리를 조정하기 위한 함수 호출
     rbtree_insert_fixup(t,newNode);
-    //printTree(t,t->root,1);
     return newNode;
 }
 
@@ -148,7 +149,7 @@ int rbtree_erase(rbtree *tree, node_t *targetNode) {
     //지울 노드의 왼쪽이 NIL이면
     if (targetNode->left == tree->nil) {
         x = targetNode->right;
-        rbtree_transplant(tree,targetNode,targetNode->right)
+        rbtree_transplant(tree,targetNode,targetNode->right);
     } else if (targetNode->right == tree->nil) {
         x = targetNode->left;
         rbtree_transplant(tree, targetNode, targetNode->left);
@@ -186,7 +187,7 @@ void rbtree_delete_fixup(rbtree *tree, node_t *x){
     while (x != tree->root && x->color == RBTREE_BLACK) {
         //CASE 1 ~ 4 : LEFT CASE, doubled black이 왼쪽 노드인 경우
         if (x == x->parent->left) {
-            node_t *w = x->parent->left;//w는 x의 형제 노드
+            node_t *w = x->parent->right;//w는 x의 형제 노드
             //형제 노드가 RED인 경우
             if (w->color == RBTREE_RED) {
                 w->color = RBTREE_BLACK;
@@ -287,7 +288,7 @@ void rotate_right(rbtree* tree, node_t* node){
     //target의 left를 temp로 지정
     temp = node->left;
     //temp의 오른쪽 서브트리를 target의 왼쪽 서브트리로 변경
-    node->right = temp->left;
+    node->left = temp->right;
     //tmp의 오른쪽 서브트리가 NIL이 아니면 해당 노드의 부모를 node로 설정
     if (temp->right != tree->nil) {
         temp->right->parent = node;
