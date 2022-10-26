@@ -26,6 +26,7 @@ void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
     if (t != NULL) {
         delete_rbtree_internal(t,t->root);
+        free(t->nil);
         free(t);
     }
 }
