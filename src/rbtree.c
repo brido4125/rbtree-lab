@@ -233,7 +233,7 @@ int rbtree_erase(rbtree *tree, node_t *targetNode) {
             y = y->left;
         }
         yOriginalColor = y->color;//설정된 직후 노드의 색깔로 닫시 설정
-        x = y->right;//x를 직후노드의 오른쪽 자식으로 설정
+        x = y->right;//x를 직후노드의 오른쪽 자식으로 설정,직후 노드는 left child를 가질 수 없기 때문에
         //y의 부모가 삭제할 노드인 경우,즉 depth가 1만큼 차이가 나는 경우
         if (y->parent == targetNode) {
             x->parent = y;
