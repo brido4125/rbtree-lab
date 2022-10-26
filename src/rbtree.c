@@ -181,12 +181,12 @@ void rbtree_delete_fixup(rbtree *tree, node_t *x){
                 w->color = RBTREE_BLACK;
                 x->parent->color = RBTREE_RED;
                 rotate_left(tree, x->parent);
-                w = x->parent->right;
+                w = x->parent->right;//Tree 구조가 변경 되었기에 w 형제노드를 새롭게 연결
             }
             //x의 형제 w는 흑색이고 w의 자식들이 모두 BLACK
             if (w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK) {
                 w->color = RBTREE_RED;
-                x = x->parent;
+                x = x->parent;//부모 노드가 red인지 black인지 알 수 없는 상황이라서 x에 부모 노드 주소 대입
             }
 
             else{
@@ -195,8 +195,9 @@ void rbtree_delete_fixup(rbtree *tree, node_t *x){
                     w->left->color = RBTREE_BLACK;
                     w->color = RBTREE_RED;
                     rotate_right(tree, w);
-                    w = x->parent->right;
+                    w = x->parent->right;//rotate하고 난 뒤, 형제 노드 w를 새롭게 연결
                 }
+                //x의 오른쪽 형제가 black이고 그 형제의 오른쪽 자녀가 red인 경우
                 w->color = x->parent->color;
                 x->parent->color = RBTREE_BLACK;
                 w->right->color = RBTREE_BLACK;
