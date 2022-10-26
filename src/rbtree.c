@@ -270,9 +270,26 @@ void rbtree_delete_fixup(rbtree *tree, node_t *x){
     x->color = RBTREE_BLACK;
 }
 
+void setArrayByInorder(const rbtree* tree,const node_t* current,key_t *arr,const size_t n,int* index){
+    if (current == tree->nil) {
+        return;
+    }
+    setArrayByInorder(tree,current->left, arr, n, index);
+    if (*index < n) {
+        arr[*index] = current->key;
+        (*index)++;
+    }
+    setArrayByInorder(tree,current->right, arr, n, index);
+}
+
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-  // TODO: implement to_array
-  return 0;
+  // TODO: implement to_array, 중위 순회 사용 => 오름차순 정렬
+    if (t->root == t->nil) {
+        return 0;
+    }
+    int index = 0;
+    setArrayByInorder(t,t->root, arr, n, &index);
+    return 0;
 }
 
 //temp가 node 보다 상위 노드로 바뀌어야함
