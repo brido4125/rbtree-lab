@@ -82,7 +82,8 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     } else if (newNode->key < parentNode->key) {
         parentNode->left = newNode;
     } else{
-        if (newNode->key == parentNode.key && parentNode->right->key == newNode->key) {
+        //중복 제한 조건
+        if (newNode->key == parentNode->key && parentNode->right->key == newNode->key) {
             return NULL;
         }
         parentNode->right = newNode;
