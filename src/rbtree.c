@@ -82,6 +82,9 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     } else if (newNode->key < parentNode->key) {
         parentNode->left = newNode;
     } else{
+        if (newNode->key == parentNode.key && parentNode->right->key == newNode->key) {
+            return NULL;
+        }
         parentNode->right = newNode;
     }
     //새로 추가된 노드의 leaf node를 nil node로 설정
