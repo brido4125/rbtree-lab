@@ -112,12 +112,26 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
 
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+    if (t->root == t->nil) {
+        return NULL;
+    }
+    node_t *minNode = t->root;
+    while (minNode != t->nil) {
+        minNode = minNode->left;
+    }
+    return minNode;
 }
 
 node_t *rbtree_max(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+    if (t->root == t->nil) {
+        return NULL;
+    }
+    node_t *maxNode = t->root;
+    while (maxNode != t->nil) {
+        maxNode = maxNode->right;
+    }
+    return maxNode;
 }
 
 void rbtree_transplant(rbtree* tree,node_t* firstSubtreeRoot,node_t* secondSubtreeRoot){
