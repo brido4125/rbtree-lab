@@ -116,7 +116,7 @@ node_t *rbtree_min(const rbtree *t) {
         return NULL;
     }
     node_t *minNode = t->root;
-    while (minNode != t->nil) {
+    while (minNode->left != t->nil) {
         minNode = minNode->left;
     }
     return minNode;
@@ -128,7 +128,7 @@ node_t *rbtree_max(const rbtree *t) {
         return NULL;
     }
     node_t *maxNode = t->root;
-    while (maxNode != t->nil) {
+    while (maxNode->right != t->nil) {
         maxNode = maxNode->right;
     }
     return maxNode;
